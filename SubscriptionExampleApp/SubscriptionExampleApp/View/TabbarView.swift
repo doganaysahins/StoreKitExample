@@ -8,6 +8,13 @@
 import SwiftUI
 
 struct TabbarView: View {
+    @StateObject var storeManager = StoreManager()
+    let productIDs = [
+        
+        "YOUR_INAPP_ID",
+        "YOUR_INAPP_ID1"
+        
+    ]
     var body: some View {
         TabView {
             HomeView()
@@ -19,10 +26,12 @@ struct TabbarView: View {
                         
                 }
             
-            SettingsView().tabItem {
+            SettingsView(storeManager: storeManager).tabItem {
                 Label("Settings", systemImage: "gear")
             }
-    }
+        }.onAppear {
+            storeManager.getProducts(productIDs: productIDs)
+        }
     }
 }
 

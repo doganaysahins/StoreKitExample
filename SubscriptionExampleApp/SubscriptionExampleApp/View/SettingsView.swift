@@ -6,12 +6,14 @@
 //
 
 import SwiftUI
-
+import StoreKit
 struct SettingsView: View {
     @State var isExpanded = true
-    init(){
-        UITableView.appearance().backgroundColor = .clear
-    }
+    @StateObject var storeManager: StoreManager
+
+    
+    
+
     var body: some View {
         Form{
             Section("What is the premium?") {
@@ -22,17 +24,23 @@ struct SettingsView: View {
             
             
             Section("Plans") {
-                List(1..<3){_ in
+                List(storeManager.myProducts, id : \.self){products in
                     Button {
-                        print("purchased..")
-                        UserDefaults.standard.setValue(true, forKey: "purchased")
+                        storeManager.purchaseProduct(product: products)
+                        UserDefaults.standard.setValue(true, forKey: products.productIdentifier)
                     } label: {
                         HStack{
-                            Text("productitle")
-                                .font(.headline)
+                            VStack(alignment: .leading){
+                                Text(products.localizedTitle)
+                                    .font(.headline)
+                                Text(products.localizedDescription)
+                                    .font(.caption2)
+                                    .foregroundColor(.gray)
+                            }
+                          
                             Spacer()
-                            if !UserDefaults.standard.bool(forKey: "purchased"){
-                                Text("productprice")
+                            if !UserDefaults.standard.bool(forKey: products.productIdentifier){
+                                Text("\(products.localizedPrice)")
                                     .font(.caption).foregroundColor(.gray)
                             }else{
                                 Image(systemName: "checkmark.circle.fill")
@@ -48,13 +56,30 @@ struct SettingsView: View {
 
                 }
             }
+            Button {
+                storeManager.restoreProducts()
+            } label: {
+                Text("Restore Product")
+            }
+
 
         }
+       
     }
 }
 
 struct SettingsView_Previews: PreviewProvider {
     static var previews: some View {
-        SettingsView()
+        SettingsView(storeManager: StoreManager())
+    }
+}
+
+
+extension SKProduct {
+    var localizedPrice: String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        formatter.locale = priceLocale
+        return formatter.string(from: price)!
     }
 }

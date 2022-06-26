@@ -11,6 +11,8 @@ struct HomeView: View {
     @State var isSubscribed : Bool = false
     @State var showAlert : Bool = false
     
+    @State private var purchased : Bool = (UserDefaults.standard.bool(forKey: "YOUR_INAPP_ID") || UserDefaults.standard.bool(forKey: "YOUR_INAPP_ID"))
+    
     var body: some View {
         
         VStack{
@@ -37,17 +39,17 @@ struct HomeView: View {
                         Text("Do something.")
                             .padding()
                             .foregroundColor(.gray)
-                    }.disabled(!isSubscribed)
+                    }.disabled(!purchased)
                     .alert("You are premium <3", isPresented: $showAlert) {
                                    Button("OK", role: .cancel) { }
                                }
                     
                     .background(.green)
                 }
-            }.blur(radius: isSubscribed ? 0 : 20)
+            }.blur(radius: purchased ? 0 : 20)
         }.padding()
             .onAppear {
-                isSubscribed = (UserDefaults.standard.bool(forKey: "purchased"))
+                purchased = (UserDefaults.standard.bool(forKey: "YOUR_INAPP_ID") || UserDefaults.standard.bool(forKey: "YOUR_INAPP_ID1"))
             }
     }
 }
